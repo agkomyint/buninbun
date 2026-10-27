@@ -11,7 +11,8 @@ try {
   for (const name of (await readdir(fixtureDir)).filter(x => x.endsWith(".test.ts")).sort()) {
     const original = join(fixtureDir, name);
     async function execute(args: string[]) {
-      const process = Bun.spawn(args, { cwd: project, stdout: "pipe", stderr: "pipe", env: { ...Bun.env, NO_COLOR: "1" } });
+      // The only fixture intentionally tests selection; Bun disables .only in CI by default.
+      const process = Bun.spawn(args, { cwd: project, stdout: "pipe", stderr: "pipe", env: { ...Bun.env, CI: "false", NO_COLOR: "1" } });
       const [stdout, stderr, exit] = await Promise.all([process.stdout.text(), process.stderr.text(), process.exited]);
       return { stdout, stderr, exit };
     }
