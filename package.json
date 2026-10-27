@@ -1,0 +1,1 @@
+{"name":"buninbun","version":"0.1.0","private":true,"type":"module","scripts":{"test":"bun run src/compare.ts","build":"bun build --compile src/cli.ts --outfile dist/buninbun","benchmark":"bun run src/benchmark.ts"}}

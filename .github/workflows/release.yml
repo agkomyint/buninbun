@@ -1,0 +1,57 @@
+name: Release
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            artifact: buninbun-linux-x64
+            binary: dist/buninbun
+          - os: macos-14
+            artifact: buninbun-darwin-arm64
+            binary: dist/buninbun
+          - os: windows-latest
+            artifact: buninbun-windows-x64.exe
+            binary: dist/buninbun.exe
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.4
+      - run: bun run build
+      - name: Check binary
+        shell: bash
+        run: BUNINBUN_BINARY='${{ matrix.binary }}' bun run test
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: ${{ matrix.binary }}
+          if-no-files-found: error
+  release:
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+      - name: Prepare release assets
+        run: |
+          mkdir release
+          cp artifacts/buninbun-linux-x64/buninbun release/buninbun-linux-x64
+          cp artifacts/buninbun-darwin-arm64/buninbun release/buninbun-darwin-arm64
+          cp artifacts/buninbun-windows-x64.exe/buninbun.exe release/buninbun-windows-x64.exe
+          cd release
+          sha256sum * > SHA256SUMS
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: release/*
+          generate_release_notes: true
