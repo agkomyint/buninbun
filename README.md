@@ -25,3 +25,5 @@ Run `bun run benchmark` after building. It compares process wall time for 1,000 
 CI builds and compares the executable on Linux, macOS and Windows. Pushing a `v*` tag triggers a GitHub Release with Linux x64, macOS ARM64 and Windows x64 binaries and SHA-256 checksums. The release workflow can also be run manually to produce workflow artifacts without publishing a release.
 
 The runner implements `test`, `it`, `describe`, `test.skip`, `test.only`, lifecycle hooks, async tests, and a small set of matchers. This is an experiment, not a drop-in replacement: discovery, timeouts, mocks, snapshots, error formatting, and many edge cases are not implemented. The import redirect is a simple textual substitution, so unusual import syntax and arbitrary source text containing that exact string are not fully supported. The current comparison checks aggregate outcomes, not individual test identities or exact errors; add explicit event markers where behavior matters.
+
+Licensed under the [MIT License](LICENSE).
